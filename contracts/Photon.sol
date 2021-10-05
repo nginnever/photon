@@ -2,9 +2,9 @@
 
 pragma solidity >=0.8.0;
 
-import "@gnosis/zodiac/contracts/core/Modifier.sol";
+import "@gnosis.pm/zodiac/contracts/core/Module.sol";
 
-contract Roles is Modifier {
+contract Photon is Module {
     struct Function {
         bool allowed;
         bool scoped;
@@ -52,10 +52,37 @@ contract Roles is Modifier {
     event DelegateCallsDisallowedOnTarget(address target);
     event ScopeGuardSetup(address indexed initiator, address indexed owner);
 
-    constructor(address _safe) {
+    constructor(
+        address _owner,
+        address _avatar,
+        address _target
+    ) {
+        bytes memory initParams = abi.encode(
+            _owner,
+            _avatar,
+            _target
+        );
+        setUp(initParams);
+    }
+
+    function setUp(bytes memory initParams) public override {
+        (
+            address _owner,
+            address _avatar,
+            address _target
+        ) = abi.decode(
+            initParams,
+            (address, address, address)
+        );
         __Ownable_init();
-        modules[SENTINEL_MODULES] = SENTINEL_MODULES;
-        safe = _safe;
+        require(_avatar != address(0), "Avatar can not be zero address");
+        avatar = _avatar;
+        require(_target != address(0), "Target can not be zero address");
+        target = _target;
+
+        transferOwnership(_owner);
+
+        //emit ExitModuleSetup(msg.sender, _avatar);
     }
 
     /// @dev Allows multisig owners to make call to an address.
@@ -330,5 +357,4 @@ contract Roles is Modifier {
 
     function checkAfterExecution(bytes32, bool) external {}
 
-    function setUp(bytes calldata initializeParams) public virtual override {}
 }

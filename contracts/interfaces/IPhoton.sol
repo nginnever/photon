@@ -2,6 +2,6 @@
 
 pragma solidity >=0.8.0;
 
-interface IRoles {
+interface IPhoton {
     function checkMembership(address member) external view returns (bool);
 }
