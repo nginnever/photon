@@ -24,11 +24,10 @@ contract Photon is Module {
         mapping(address => Target) allowedTargets;
     }
 
-    address public safe;
     mapping(address => Role) public memberRoles;
 
-    modifier onlySafe() {
-        require(msg.sender == safe, "TW025");
+    modifier onlyAvatar() {
+        require(msg.sender == avatar, "TW025");
         _;
     }
 
@@ -88,7 +87,7 @@ contract Photon is Module {
     /// @dev Allows multisig owners to make call to an address.
     /// @notice Only callable by owner.
     /// @param target Address to be allowed.
-    function allowTarget(address member, address target) public onlySafe {
+    function allowTarget(address member, address target) public onlyAvatar {
         memberRoles[member].allowedTargets[target].allowed = true;
         emit TargetAllowed(target);
     }
@@ -96,7 +95,7 @@ contract Photon is Module {
     /// @dev Disallows multisig owners to make call to an address.
     /// @notice Only callable by owner.
     /// @param target Address to be disallowed.
-    function disallowTarget(address member, address target) public onlySafe {
+    function disallowTarget(address member, address target) public onlyAvatar {
         memberRoles[member].allowedTargets[target].allowed = false;
         emit TargetDisallowed(target);
     }
@@ -109,7 +108,7 @@ contract Photon is Module {
         address member,
         address target,
         bytes4 functionSig
-    ) public onlySafe {
+    ) public onlyAvatar {
         memberRoles[member]
             .allowedTargets[target]
             .allowedFunctions[functionSig]
@@ -125,7 +124,7 @@ contract Photon is Module {
         address member,
         address target,
         bytes4 functionSig
-    ) public onlySafe {
+    ) public onlyAvatar {
         memberRoles[member]
             .allowedTargets[target]
             .allowedFunctions[functionSig]
@@ -136,7 +135,7 @@ contract Photon is Module {
     /// @dev Allows multisig owners to make delegate calls to an address.
     /// @notice Only callable by owner.
     /// @param target Address to which delegate calls will be allowed.
-    function allowDelegateCall(address member, address target) public onlySafe {
+    function allowDelegateCall(address member, address target) public onlyAvatar {
         memberRoles[member].allowedTargets[target].delegateCallAllowed = true;
         emit DelegateCallsAllowedOnTarget(target);
     }
@@ -146,7 +145,7 @@ contract Photon is Module {
     /// @param target Address to which delegate calls will be disallowed.
     function disallowDelegateCall(address member, address target)
         public
-        onlySafe
+        onlyAvatar
     {
         memberRoles[member].allowedTargets[target].delegateCallAllowed = false;
         emit DelegateCallsDisallowedOnTarget(target);
@@ -157,7 +156,7 @@ contract Photon is Module {
     /// @param target Address that will be scoped/unscoped.
     function toggleTargetScoped(address member, address target)
         public
-        onlySafe
+        onlyAvatar
     {
         memberRoles[member].allowedTargets[target].scoped = !memberRoles[member]
             .allowedTargets[target]
@@ -175,7 +174,7 @@ contract Photon is Module {
         address member,
         address target,
         bytes4 functionSig
-    ) public onlySafe {
+    ) public onlyAvatar {
         memberRoles[member]
             .allowedTargets[target]
             .allowedFunctions[functionSig]
@@ -203,7 +202,7 @@ contract Photon is Module {
         address target,
         bytes4 functionSig,
         bytes32 dataHash
-    ) public onlySafe {
+    ) public onlyAvatar {
         memberRoles[member]
             .allowedTargets[target]
             .allowedFunctions[functionSig]
@@ -221,7 +220,7 @@ contract Photon is Module {
         address target,
         bytes4 functionSig,
         bytes32 dataHash
-    ) public onlySafe {
+    ) public onlyAvatar {
         memberRoles[member]
             .allowedTargets[target]
             .allowedFunctions[functionSig]
